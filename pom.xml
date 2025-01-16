@@ -1,0 +1,146 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.tecal</groupId>
+    <artifactId>sftp-uploader</artifactId>
+    <version>1.0.0</version>
+
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.release>21</maven.compiler.release>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>0.1.55</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ini4j</groupId>
+            <artifactId>ini4j</artifactId>
+            <version>0.5.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.20.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.20.0</version>
+        </dependency>
+       
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Compiler Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
+                <configuration>
+                    <source>21</source>
+                    <target>21</target>
+                </configuration>
+            </plugin>
+
+           
+            <!-- Maven Shade Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.4.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>true</createDependencyReducedPom>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.tecal.SftpUploader</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Launch4j Plugin -->
+       <plugin>
+			    <groupId>com.akathist.maven.plugins.launch4j</groupId>
+			    <artifactId>launch4j-maven-plugin</artifactId>
+			    <version>2.3.3</version>
+			
+			    <executions>
+			        <execution>
+			            <id>SftpUploaderExe</id>
+			            <phase>package</phase>
+			            <goals>
+			                <goal>launch4j</goal>
+			            </goals>
+			            <configuration>
+			                <!-- Configuration de la version et de la compatibilité du JRE -->
+			                <jre>
+			                    <path>%JAVA_HOME%;%PATH%</path>
+			                    <requiresJdk>false</requiresJdk>
+			                    <requires64Bit>false</requires64Bit>
+			                    <minVersion>11</minVersion> <!-- Version minimale de Java -->
+			                    <maxVersion>21</maxVersion> <!-- Version maximale de Java -->
+			                  
+			                </jre>
+			
+			                <!-- Ne pas encapsuler le JAR dans l'exécutable -->
+			                <dontWrapJar>false</dontWrapJar>
+			
+			                <!-- Type d'en-tête GUI (sans fenêtre de console) -->
+			                <headerType>gui</headerType>
+			
+			                <!-- Nom du fichier EXE à générer -->
+			                <outfile>target/sftp-uploader-${project.version}.exe</outfile>
+			
+			                <!-- Chemin vers le fichier JAR généré -->
+			                <jar>target/sftp-uploader-${project.version}.jar</jar>
+			
+			                <!-- Icône de l'exécutable -->
+			                <icon>src/main/resources/sftp-uploader-icon.ico</icon>
+			
+			                <!-- Titre d'erreur affiché en cas de problème -->
+			                <errTitle>SFTP Uploader Error</errTitle>
+			
+			                <!-- Configuration de la classe principale (point d'entrée de l'application) -->
+			                <classPath>
+			                    <mainClass>com.tecal.SftpUploader</mainClass>
+			                    <addDependencies>true</addDependencies>
+			                </classPath>
+			
+			                <!-- Informations de version pour l'exécutable -->
+			                <versionInfo>
+			                    <fileVersion>1.${project.version}</fileVersion>
+			                    <txtFileVersion>txt file version</txtFileVersion>
+			                    <fileDescription>Application de transfert SFTP</fileDescription>
+			                    <copyright>Copyright 2025</copyright>
+			                    <productVersion>1.${project.version}</productVersion>
+			                    <txtProductVersion>txt product version</txtProductVersion>
+			                    <productName>SFTP Uploader</productName>
+			                    <internalName>SftpUploader</internalName>
+			                    <originalFilename>sftp-uploader.exe</originalFilename>
+			                </versionInfo>
+			
+			                <!-- Configuration des fichiers externes (si nécessaire) -->
+			                <preCp>lib/*</preCp> <!-- Si vous avez des dépendances supplémentaires dans le dossier lib -->
+			            </configuration>
+			        </execution>
+			    </executions>
+			</plugin>
+
+         
+        </plugins>
+    </build>
+</project>
