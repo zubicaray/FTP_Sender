@@ -19,25 +19,20 @@ public class SftpUploader {
     private static final Logger logger = LogManager.getLogger(SftpUploader.class);
     
     public static void ecrireSectionRetourDansConfig(int codeRetour, String messageRetour) throws IOException {
-        String cheminConfig = "config.ini"; // Chemin vers le fichier config.ini
+        String cheminConfig = "config.ini";
         File fichierConfig = new File(cheminConfig);
 
-        // Charger ou créer le fichier INI
         Wini ini = new Wini(fichierConfig);
-
-        // Ajouter ou mettre à jour la section [retour]
         ini.put("retour", "code_retour", codeRetour);
         ini.put("retour", "message", messageRetour);
-
-        // Sauvegarder les modifications
         ini.store();
 
         System.out.println("Section [retour] mise à jour avec succès !");
     }
     
     public static void main(String[] args) {
-        int exitCode = 0; // Par défaut, succès
-        String messageRetour = "Succès"; // Message de retour
+        int exitCode = 0;
+        String messageRetour = "Succès";
         
         if (args.length < 1) {
             logger.error("Veuillez spécifier le chemin du fichier à envoyer en argument.");
@@ -53,11 +48,10 @@ public class SftpUploader {
             System.exit(exitCode);
         }
 
-        String localFilePath = args[0]; // Fichier à envoyer
-        String configFilePath = "config.ini"; // Configuration
+        String localFilePath = args[0];
+        String configFilePath = "config.ini";
 
         try {
-            // Charger la configuration
             Wini ini = new Wini(new File(configFilePath));
             String host = ini.get("sftp", "host");
             int port = Integer.parseInt(ini.get("sftp", "port"));
@@ -69,9 +63,9 @@ public class SftpUploader {
 
             JSch jsch = new JSch();
 
-            // Utilisation de la clé RSA configurée dans le fichier ini
             if (rsa_file != null && !rsa_file.trim().isEmpty()) {
-                jsch.addIdentity(rsa_file);
+                // Cette bibliothèque moderne supporte directement vos clés privées sans conversion PEM obligatoire !
+                jsch.addIdentity(rsa_file,"crouteu");
                 logger.info("Clé RSA chargée depuis : {}", rsa_file);
             } else {
                 logger.warn("Aucun chemin de clé rsa_file spécifié dans la configuration.");
@@ -81,7 +75,6 @@ public class SftpUploader {
             session.setConfig("StrictHostKeyChecking", "no");
 
             try {
-                // Connexion au serveur
                 session.connect();
                 logger.info("Connexion établie avec succès au serveur SFTP.");
 
@@ -89,7 +82,6 @@ public class SftpUploader {
                 channel.connect();
                 ChannelSftp sftpChannel = (ChannelSftp) channel;
 
-                // Transférer le fichier
                 logger.info("Envoi du fichier {} vers le dossier {} sur le serveur SFTP.", localFilePath, remoteDir);
                 sftpChannel.cd(remoteDir);
                 try (FileInputStream fis = new FileInputStream(new File(localFilePath))) {
@@ -126,7 +118,6 @@ public class SftpUploader {
             messageRetour = "Erreur : Une erreur inattendue est survenue.";
         }
         finally {
-            // Écrire le code retour dans config.ini
             try {
                 logger.info("ecrireSectionRetourDansConfig !");
                 ecrireSectionRetourDansConfig(exitCode, messageRetour);
@@ -134,7 +125,6 @@ public class SftpUploader {
                 System.err.println("Impossible d'écrire dans config.ini : " + e.getMessage());
             }
 
-            // Sortie du programme avec le code retour approprié
             System.exit(exitCode);
         }
     }

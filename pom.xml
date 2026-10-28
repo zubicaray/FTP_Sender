@@ -12,11 +12,21 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>com.jcraft</groupId>
-            <artifactId>jsch</artifactId>
-            <version>0.1.55</version>
-        </dependency>
+        <!-- Ancienne dépendance à supprimer -->
+    <!-- 
+    <dependency>
+        <groupId>com.jcraft</groupId>
+        <artifactId>jsch</artifactId>
+        <version>0.1.55</version>
+    </dependency>
+    -->
+
+    <!-- Nouvelle dépendance moderne et maintenue -->
+    <dependency>
+        <groupId>com.github.mwiede</groupId>
+        <artifactId>jsch</artifactId>
+        <version>0.2.16</version> <!-- ou version plus récente -->
+    </dependency>
         <dependency>
             <groupId>org.ini4j</groupId>
             <artifactId>ini4j</artifactId>
